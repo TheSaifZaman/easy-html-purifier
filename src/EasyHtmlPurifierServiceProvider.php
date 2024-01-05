@@ -8,7 +8,10 @@ use Nocturnal\EasyHtmlPurifier\Http\Middleware\EasyHtmlPurifier;
 
 class EasyHtmlPurifierServiceProvider extends ServiceProvider
 {
-    public function boot()
+    /**
+     * @return void
+     */
+    public function boot(): void
     {
         if ($this->app instanceof LaravelApplication) {
             $this->publishes([$this->getConfigSource() => config_path('html_purifier.php')]);
@@ -18,13 +21,19 @@ class EasyHtmlPurifierServiceProvider extends ServiceProvider
         ]);
     }
 
-    public function register()
+    /**
+     * @return void
+     */
+    public function register(): void
     {
         $this->mergeConfigFrom($this->getConfigSource(), 'html_purifier');
 
     }
 
-    protected function getConfigSource()
+    /**
+     * @return bool|string
+     */
+    protected function getConfigSource(): bool|string
     {
         return realpath(__DIR__.'/../config/html_purifier.php');
     }
