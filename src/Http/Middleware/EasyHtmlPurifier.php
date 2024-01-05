@@ -34,8 +34,7 @@ class EasyHtmlPurifier extends Authenticate
     {
         if ($this->shouldSanitize($request)) {
             $this->config = new \Illuminate\Config\Repository();
-            $configObj = HTMLPurifier_Config::createDefault();
-            $this->purifier = new HTMLPurifier($configObj);
+            $this->purifier = new HTMLPurifier($this->getConfig());
             $inputs = $request->all();
             $inputs = $this->sanitizeInputs($inputs);
             $request->merge($inputs);
@@ -220,16 +219,11 @@ class EasyHtmlPurifier extends Authenticate
 
     /**
      * @param array $definitionConfig
-     * @param HTMLPurifier_Config|null $configObject
+     * @param HTMLPurifier_Config $configObject
      * @return void
      */
-    private function addCustomDefinition(array $definitionConfig, HTMLPurifier_Config $configObject = null): void
+    private function addCustomDefinition(array $definitionConfig, HTMLPurifier_Config $configObject): void
     {
-        if (!$configObject) {
-            $configObject = HTMLPurifier_Config::createDefault();
-            $configObject->loadArray($this->getConfig());
-        }
-
         // Set up the custom definition
         $configObject->set('HTML.DefinitionID', $definitionConfig['id']);
         $configObject->set('HTML.DefinitionRev', $definitionConfig['rev']);
