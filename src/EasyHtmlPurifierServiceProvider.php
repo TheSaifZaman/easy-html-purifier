@@ -3,22 +3,23 @@
 namespace Nocturnal\EasyHtmlPurifier;
 
 use Illuminate\Foundation\Application as LaravelApplication;
+use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Nocturnal\EasyHtmlPurifier\Http\Middleware\EasyHtmlPurifier;
 
 class EasyHtmlPurifierServiceProvider extends ServiceProvider
 {
     /**
+     * @param Router $router
      * @return void
      */
-    public function boot(): void
+    public function boot(Router $router): void
     {
         if ($this->app instanceof LaravelApplication) {
             $this->publishes([$this->getConfigSource() => config_path('html_purifier.php')]);
         }
-        $this->app->middleware([
-            EasyHtmlPurifier::class
-        ]);
+
+        $router->aliasMiddleware('easy-html-purifier', EasyHtmlPurifier::class);
     }
 
     /**
