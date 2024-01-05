@@ -20,10 +20,6 @@
     ],
     "require": {
         "php": "^8.0",
-        "laravel/framework": "^8.0",
-        "illuminate/config": "^5.8|^6.0|^7.0|^8.0|^9.0|^10.0",
-        "illuminate/support": "^5.8|^6.0|^7.0|^8.0|^9.0|^10.0",
-        "illuminate/filesystem": "^5.8|^6.0|^7.0|^8.0|^9.0|^10.0",
         "ezyang/htmlpurifier": "^4.16.0"
     },
     "extra": {
