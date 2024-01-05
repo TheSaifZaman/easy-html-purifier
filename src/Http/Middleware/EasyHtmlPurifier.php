@@ -9,7 +9,6 @@ use HTMLPurifier_AttrDef;
 use HTMLPurifier_Config;
 use HTMLPurifier_HTMLDefinition;
 use Illuminate\Auth\Middleware\Authenticate;
-use Illuminate\Contracts\Config\Repository;
 
 class EasyHtmlPurifier extends Authenticate
 {
@@ -17,11 +16,6 @@ class EasyHtmlPurifier extends Authenticate
      * @var HTMLPurifier
      */
     private HTMLPurifier $purifier;
-
-    /**
-     * @var Repository
-     */
-    protected Repository $config;
 
     /**
      * @param $request
@@ -33,7 +27,12 @@ class EasyHtmlPurifier extends Authenticate
     public function handle($request, Closure $next, ...$guards): mixed
     {
         if ($this->shouldSanitize($request)) {
-            $this->config = new \Illuminate\Config\Repository();
+            $purifierConfig = config('html_purifier');
+
+            if (empty($purifierConfig)) {
+                throw new Exception('Error: config/html_purifier.php not loaded. Please, publish it, clear the config and try again.');
+            }
+
             $this->purifier = new HTMLPurifier($this->getConfig());
             $inputs = $request->all();
             $inputs = $this->sanitizeInputs($inputs);
@@ -110,20 +109,25 @@ class EasyHtmlPurifier extends Authenticate
         $configObject = HTMLPurifier_Config::createDefault();
 
         // Allow configuration to be modified
-        if (!$this->config->get('html_purifier.finalize')) {
+        if (!config('html_purifier.finalize')) {
             $configObject->autoFinalize = false;
         }
 
         // Set default config
         $defaultConfig = [];
-        $defaultConfig['Core.Encoding'] = $this->config->get('html_purifier.encoding');
-        $defaultConfig['Cache.SerializerPath'] = $this->config->get('html_purifier.cachePath', storage_path('app/purifier'));
-        $defaultConfig['Cache.SerializerPermissions'] = $this->config->get('html_purifier.cacheFileMode', 0777);
+        $defaultConfig['Core.Encoding'] = config('html_purifier.encoding');
+
+        if (!file_exists(config('html_purifier.cachePath'))) {
+            mkdir(config('html_purifier.cachePath'), config('html_purifier.cacheFileMode', 0777), true);
+        }
+
+        $defaultConfig['Cache.SerializerPath'] = config('html_purifier.cachePath');
+        $defaultConfig['Cache.SerializerPermissions'] = config('html_purifier.cacheFileMode', 0777);
 
         if (!(null)) {
-            $config = $this->config->get('html_purifier.settings.default');
+            $config = config('html_purifier.settings.default');
         } elseif (is_string($config)) {
-            $config = $this->config->get('html_purifier.settings.' . $config);
+            $config = config('html_purifier.settings.' . $config);
         }
 
         if (!is_array($config)) {
@@ -137,19 +141,19 @@ class EasyHtmlPurifier extends Authenticate
         $configObject->loadArray($config);
 
         // Load custom definition if set
-        if ($definitionConfig = $this->config->get('html_purifier.settings.custom_definition')) {
+        if ($definitionConfig = config('html_purifier.settings.custom_definition')) {
             $this->addCustomDefinition($definitionConfig, $configObject);
         }
 
         // Load custom elements if set
-        if ($elements = $this->config->get('html_purifier.settings.custom_elements')) {
+        if ($elements = config('html_purifier.settings.custom_elements')) {
             if ($def = $configObject->maybeGetRawHTMLDefinition()) {
                 $this->addCustomElements($elements, $def);
             }
         }
 
         // Load custom attributes if set
-        if ($attributes = $this->config->get('html_purifier.settings.custom_attributes')) {
+        if ($attributes = config('html_purifier.settings.custom_attributes')) {
             if ($def = $configObject->maybeGetRawHTMLDefinition()) {
                 $this->addCustomAttributes($attributes, $def);
             }
@@ -255,7 +259,7 @@ class EasyHtmlPurifier extends Authenticate
     private function clean($dirty): string
     {
         //If $dirty is not an explicit string, bypass purification assuming configuration allows this
-        $ignoreNonStrings = $this->config->get('html_purifier.ignoreNonStrings', false);
+        $ignoreNonStrings = config('html_purifier.ignoreNonStrings', false);
         $stringTest = is_string($dirty);
         if ($stringTest === false && $ignoreNonStrings === true) {
             return $dirty;
