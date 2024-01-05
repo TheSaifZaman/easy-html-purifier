@@ -60,7 +60,10 @@ class EasyHtmlPurifier extends Authenticate
     private function sanitizeInputs($input): mixed
     {
         if (is_array($input)) return $this->sanitizeArray($input);
-        if (is_bool($input) || is_numeric($input)) return $input;
+        if (is_bool($input)
+            || is_numeric($input)
+            || is_file($input)
+        ) return $input;
         if (is_string($input)) return $this->sanitizeString($input);
         if (is_object($input)) return $this->sanitizeObject($input);
         return $input;
