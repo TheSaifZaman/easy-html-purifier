@@ -1,0 +1,38 @@
+{
+    "name": "nocturnal/easy-html-purifier",
+    "description": "A Laravel package to sanitize input using HTML Purifier",
+    "type": "package",
+    "keywords": ["Laravel HtmlPurifier", "Laravel Purifier", "Laravel Security", "HtmlPurifier", "Purifier", "security", "xss"],
+    "homepage": "https://github.com/TheSaifZaman/easy-html-purifier",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Nocturnal\\EasyHtmlPurifier\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Md Saif Zaman",
+            "email": "info.saifzaman@gmail.com",
+            "homepage": "https://github.com/TheSaifZaman",
+            "role": "Software Engineer"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "laravel/framework": "^8.0",
+        "illuminate/config": "^5.8|^6.0|^7.0|^8.0|^9.0|^10.0",
+        "illuminate/support": "^5.8|^6.0|^7.0|^8.0|^9.0|^10.0",
+        "illuminate/filesystem": "^5.8|^6.0|^7.0|^8.0|^9.0|^10.0",
+        "ezyang/htmlpurifier": "^4.16.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Nocturnal\\EasyHtmlPurifier\\EasyHtmlPurifierServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
