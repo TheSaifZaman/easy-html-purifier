@@ -118,8 +118,8 @@ class EasyHtmlPurifier extends Authenticate
         // Set default config
         $defaultConfig = [];
         $defaultConfig['Core.Encoding'] = $this->config->get('html_purifier.encoding');
-        $defaultConfig['Cache.SerializerPath'] = $this->config->get('html_purifier.cachePath');
-        $defaultConfig['Cache.SerializerPermissions'] = $this->config->get('html_purifier.cacheFileMode', 0755);
+        $defaultConfig['Cache.SerializerPath'] = $this->config->get('html_purifier.cachePath', storage_path('app/purifier'));
+        $defaultConfig['Cache.SerializerPermissions'] = $this->config->get('html_purifier.cacheFileMode', 0777);
 
         if (!(null)) {
             $config = $this->config->get('html_purifier.settings.default');
